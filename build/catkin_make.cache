@@ -1,2 +1,0 @@
-hls_lfcd_lds_driver:imu_calib:lino_msgs:lino_pid:lino_udev:linorobot
--DCATKIN_DEVEL_PREFIX=/home/atomicpi/workspace/kery/devel -DCMAKE_INSTALL_PREFIX=/home/atomicpi/workspace/kery/install -G Unix Makefiles
