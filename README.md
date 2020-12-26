@@ -32,6 +32,7 @@ For lidar checking,
   roscd lino_visualize/rviz
   rviz -d laser.rviz
   
-
+3. audio device id keeps chaging
+https://askubuntu.com/questions/991484/how-to-prevent-automatic-change-of-the-audio-device
 
 
