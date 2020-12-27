@@ -1,0 +1,13 @@
+
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", ATTRS{serial}=="0000:00:15.0", MODE="0666" SYMLINK+="linobase"
+#SUBSYSTEM=="usb",ATTRS{idVendor}=="1a6e",MODE="0666"SYMLINK+="linobase"
+
+
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", ATTRS{serial}=="0001", MODE="0666",SYMLINK+="linobase"
+
+#KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="0001", MODE="0666",SYMLINK+="linolidar"
+
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="linobase"
+
+KERNEL=="ttyUSB?", SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="0001", MODE="0666",SYMLINK+="linolidar"
