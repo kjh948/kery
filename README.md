@@ -36,4 +36,8 @@ For lidar checking,
 https://askubuntu.com/questions/991484/how-to-prevent-automatic-change-of-the-audio-device
 4. pip tips
 
-TMPDIR=~/workspace/tmp/ pip install --cache-dir=~/workspace/tmp/ opencv-contrib-python==4.2.0.32
+
+4. ros python pkg quickguide
+https://htsstory.tistory.com/entry/ROS-python%ED%8C%8C%EC%9D%B4%EC%8D%AC-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D-1-%ED%86%A0%ED%94%BD-%EB%A9%94%EC%8B%9C%EC%A7%80-%ED%86%B5%EC%8B%A0
+
+catkin_create_pkg NAME std_msgs rospy
