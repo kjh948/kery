@@ -9,7 +9,9 @@ import random
 import pygame		# for sound
 import subprocess
 
+#pygame.mixer.init(devicename='plughw:CARD=Audio_1,DEV=0')
 pygame.mixer.init()
+
 
 rospack = rospkg.RosPack()
 data_path = rospack.get_path('kery_sound')
