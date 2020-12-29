@@ -34,5 +34,6 @@ For lidar checking,
   
 3. audio device id keeps chaging
 https://askubuntu.com/questions/991484/how-to-prevent-automatic-change-of-the-audio-device
+4. pip tips
 
-
+TMPDIR=~/workspace/tmp/ pip install --cache-dir=~/workspace/tmp/ opencv-contrib-python==4.2.0.32
