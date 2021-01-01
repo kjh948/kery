@@ -47,3 +47,6 @@ catkin_create_pkg NAME std_msgs rospy
 https://stackoverflow.com/questions/62543965/pygame-audio-error-unrecognized-audio-format
 
 
+6. service registration on boot
+https://roboticsbackend.com/make-ros-launch-start-on-boot-with-robot_upstart/
+rosrun robot_upstart install kery_face/launch/kery_face.launch --job kery_face --symlink
