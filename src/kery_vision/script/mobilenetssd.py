@@ -16,9 +16,12 @@ class ObjectDetectorSSD():
         self.conf = conf
         self.net = cv2.dnn.readNetFromCaffe(prototxt, model)
 
+<<<<<<< HEAD
         self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_MYRIAD)
 
 
+=======
+>>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
         self.fps = FPS().start()
     def run(self, frame):
         #frame = imutils.resize(frame, width=400)

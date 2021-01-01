@@ -1,0 +1,3 @@
+<launch>
+    <node name="kery_face" pkg="kery_face" type="face.py" output="screen"/>
+</launch>

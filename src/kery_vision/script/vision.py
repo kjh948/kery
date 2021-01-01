@@ -20,7 +20,11 @@ import rospkg
 detector = dict()
 detector['coco'] = ObjectDetectorSSD
 detector['face'] = ObjectDetectorFace
+<<<<<<< HEAD
 detector_type = 'coco'
+=======
+detector_type = 'face'
+>>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
     
 rospack = rospkg.RosPack()
 data_path = rospack.get_path('kery_sound')
@@ -159,8 +163,13 @@ def overlay_on_image(frames, object_infos, camera_width, camera_height):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
+<<<<<<< HEAD
     parser.add_argument("--model", default="../models/MobileNetSSD_deploy.caffemodel", help="Path of the detection model.")
     #parser.add_argument("--model", default="../models/haarcascade_frontalface_default.xml", help="Path of the detection model.")
+=======
+    #parser.add_argument("--model", default="../models/MobileNetSSD_deploy.caffemodel", help="Path of the detection model.")
+    parser.add_argument("--model", default="../models/haarcascade_frontalface_default.xml", help="Path of the detection model.")
+>>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
     
     parser.add_argument("--prototxt", default="../models/MobileNetSSD_deploy.prototxt.txt", help="Path of the prototxt.")
     parser.add_argument("--usbcamno", type=int, default=2, help="USB Camera number.")
@@ -172,7 +181,11 @@ if __name__ == '__main__':
 
     camera_width = 640
     camera_height = 480
+<<<<<<< HEAD
     vidfps = 30
+=======
+    vidfps = 10
+>>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
     #core_num = mp.cpu_count()
     core_num    = 1
     threads_num = 4

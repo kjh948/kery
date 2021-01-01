@@ -8,9 +8,14 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time 
 
+import os
+
+os.environ["DISPLAY"]=":0.0"
+
 chrome_options = webdriver.ChromeOptions(); 
 chrome_options.add_experimental_option("excludeSwitches", ['enable-automation']);
-chrome_options.add_argument("-disable-extensions")
+#chrome_options.add_argument("-disable-extensions")
+chrome_options.add_argument("--start-fullscreen")
 driver = webdriver.Chrome(options=chrome_options);  
 driver.fullscreen_window()
 
@@ -19,6 +24,7 @@ data_path = rospack.get_path('kery_face')
 rospy.loginfo(rospy.get_caller_id() + "Loading index.html from %s", data_path)
 driver.get('file://'+data_path+'/script/index.html') 
 
+driver.find_element_by_xpath('/html/body/div[1]/button[1]').click() 
 #driver.close()
 
 def callback(data):
