@@ -49,4 +49,11 @@ catkin_create_pkg NAME std_msgs rospy
 https://stackoverflow.com/questions/62543965/pygame-audio-error-unrecognized-audio-format
 >>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
 
+<<<<<<< HEAD
 TMPDIR=~/workspace/tmp/ pip install --cache-dir=~/workspace/tmp/ opencv-contrib-python==4.2.0.32
+=======
+
+6. service registration on boot
+https://roboticsbackend.com/make-ros-launch-start-on-boot-with-robot_upstart/
+rosrun robot_upstart install kery_face/launch/kery_face.launch --job kery_face --symlink
+>>>>>>> 3c97b1c8b4a8d66cfb5d688a124658ff9b7b3637
