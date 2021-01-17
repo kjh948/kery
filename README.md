@@ -57,3 +57,6 @@ TMPDIR=~/workspace/tmp/ pip install --cache-dir=~/workspace/tmp/ opencv-contrib-
 https://roboticsbackend.com/make-ros-launch-start-on-boot-with-robot_upstart/
 rosrun robot_upstart install kery_face/launch/kery_face.launch --job kery_face --symlink
 >>>>>>> 3c97b1c8b4a8d66cfb5d688a124658ff9b7b3637
+
+7. Move cursor
+xdotool mousemove 10 10

@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
 import argparse
-#import platform
 import numpy as np
 import cv2
 import time
-#from PIL import Image
 from time import sleep
 import multiprocessing as mp
 
-from mobilenetssd import ObjectDetectorSSD
+from mobilenetssd import ObjectDetectorSSD as ObjectDetectorSSD_CV
 from facedetection import ObjectDetectorFace
+from detect_vino import ObjectDetectorSSD as ObjectDetectorSSD_VINO
 
 import rospy
 from std_msgs.msg import String
@@ -18,13 +17,13 @@ from std_msgs.msg import Int8
 import rospkg
 
 detector = dict()
-detector['coco'] = ObjectDetectorSSD
+detector['coco'] = ObjectDetectorSSD_VINO
 detector['face'] = ObjectDetectorFace
-<<<<<<< HEAD
 detector_type = 'coco'
-=======
-detector_type = 'face'
->>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
+#detector_type = 'face'
+
+
+
     
 rospack = rospkg.RosPack()
 data_path = rospack.get_path('kery_sound')
@@ -112,6 +111,7 @@ def inferencer(results, frameBuffer, model, prototxt, camera_width, camera_heigh
 
     #ssd = ObjectDetectorSSD(model, prototxt)
     model = detector[detector_type](model, prototxt)
+    #model = ObjectDetectorSSD(model = "../models/pedestrian-detection-adas-0002.xml")
     print("Loaded Graphs!!!")
 
     while True:
@@ -143,7 +143,7 @@ def overlay_on_image(frames, object_infos, camera_width, camera_height):
         cv2.rectangle(img_cp, (box_left, box_top), (box_right, box_bottom), box_color, box_thickness)
 
         percentage = int(obj[2] * 100)
-        label_text = obj[3] + " (" + str(percentage) + "%)" 
+        label_text = str(obj[3]) + " (" + str(percentage) + "%)" 
 
         label_size = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
         label_left = box_left
@@ -163,15 +163,12 @@ def overlay_on_image(frames, object_infos, camera_width, camera_height):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-<<<<<<< HEAD
-    parser.add_argument("--model", default="../models/MobileNetSSD_deploy.caffemodel", help="Path of the detection model.")
-    #parser.add_argument("--model", default="../models/haarcascade_frontalface_default.xml", help="Path of the detection model.")
-=======
-    #parser.add_argument("--model", default="../models/MobileNetSSD_deploy.caffemodel", help="Path of the detection model.")
-    parser.add_argument("--model", default="../models/haarcascade_frontalface_default.xml", help="Path of the detection model.")
->>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
-    
+    # parser.add_argument("--model", default="../models/MobileNetSSD_deploy.caffemodel", help="Path of the detection model.")
     parser.add_argument("--prototxt", default="../models/MobileNetSSD_deploy.prototxt.txt", help="Path of the prototxt.")
+    #parser.add_argument("--model", default="../models/haarcascade_frontalface_default.xml", help="Path of the detection model.")
+    parser.add_argument("--model", default="../models/pedestrian-detection-adas-0002.xml", help="Path of the detection model.")
+   
+    
     parser.add_argument("--usbcamno", type=int, default=2, help="USB Camera number.")
     args = parser.parse_args()
 
@@ -181,17 +178,12 @@ if __name__ == '__main__':
 
     camera_width = 640
     camera_height = 480
-<<<<<<< HEAD
     vidfps = 30
-=======
-    vidfps = 10
->>>>>>> ac3daa47ba918e7d54763eebaf81f4e58b678195
     #core_num = mp.cpu_count()
     core_num    = 1
     threads_num = 4
 
     try:
-        #mp.set_start_method('forkserver')
         frameBuffer = mp.Queue(10)
         results = mp.Queue()
 
