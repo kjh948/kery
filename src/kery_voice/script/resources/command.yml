@@ -1,0 +1,11 @@
+categories: [command]
+conversations:
+- [앞으로, moveforward();성공]
+- [뒤로, moveforward();성공]
+- [오른쪽, moveforward();성공]
+- [왼쪽, moveforward();성공]
+- [오른쪽, moveforward();성공]
+- [왼쪽, moveforward();성공]
+- [불꺼, moveforward();성공]
+- [불켜, moveforward();성공]
+
