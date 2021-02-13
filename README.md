@@ -60,3 +60,7 @@ rosrun robot_upstart install kery_face/launch/kery_face.launch --job kery_face -
 
 7. Move cursor
 xdotool mousemove 10 10
+
+8. astra camera
+rosrun usb_cam usb_cam_node _video_device:=/dev/video1 _framerate:=10  _pixel_format:=yuyv _image_width:=640 _image_height:=480
+roslaunch astra_launch astrapro.launch

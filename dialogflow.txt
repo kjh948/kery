@@ -1,0 +1,27 @@
+Intent list
+
+1. Wheel Control
+ - Stop, Move Forward, Move Backward, Turn left, Turn right
+2. Go to
+ - Go to [place]
+ - 따라와
+3. Personality
+ - 누구야, 이름이 뭐야, 몇살이야, 
+4. 로봇제어
+ - 볼륨 키워, 볼륨 줄여, 카메라 찍어줘, 
+5. 미디어
+ - 노래 틀어줘
+6. chichat
+ - 사랑해
+ - 심심해
+ - 바보야
+ - 무슨일이야
+ - 뭐하고 있어
+ - 너 말이 안된다
+ - 뭐 좋아해
+ - 재미있는 농담 해봐
+ - 너를 만나서 기뻐
+ - 어디에 있어
+ - 배고파
+ - 넌 엄마가 누구야
+ - 넌 아빠가 누구야
