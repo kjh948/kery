@@ -47,7 +47,7 @@ class r2d2Bot(object):
 
 
 if __name__ == "__main__":
-    bot = r2d2Bot(corpus='./resources', read_only=False)
+    bot = r2d2Bot(corpus='/home/kjh948/workspace/kery/src/kery_voice/script/resources/', read_only=False)
     while True:
         query = raw_input("Tell me : ")
         response = bot.get_response(query)
