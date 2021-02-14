@@ -12,7 +12,8 @@ import os
 import random
 from multiprocessing import Process
 
-import snowboydecoder
+import snowboydecoder_arecord as snowboydecoder
+#import snowboydecoder
 import sys
 import signal
 import collections
@@ -24,14 +25,14 @@ from chatbot import r2d2Bot
 
 rospack = rospkg.RosPack()
 data_path = rospack.get_path('kery_voice')
-rospy.loginfo("Loading r from %s", data_path)
+print("Loading r from %s", data_path)
 
 SCORE_THRE = 0.6
 
 asr = r2d2Asr(ambient=False)
 tts = r2d2Tts()
 nlu = r2d2Bot(corpus=data_path + '/script/resources', read_only=False)
-
+print("NLU: loading the corpus from "+data_path + '/script/resources')
 gOnWakeup = False
 gOnAsr = False
 
@@ -94,5 +95,6 @@ if __name__=='__main__':
     while True:
         detector.start(interrupt_check=interrupt_callback,sleep_time=0.08)
         voice_loop()
+        
 
     detector.terminate()
