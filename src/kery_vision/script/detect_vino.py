@@ -91,7 +91,7 @@ class ObjectDetectorSSD():
         
         self.fps.update()
         self.fps.stop()
-        print("[INFO] elapsed time: {:.2f}".format(self.fps.elapsed()))
+        #print("[INFO] elapsed time: {:.2f}".format(self.fps.elapsed()))
         print("[INFO] approx. FPS: {:.2f}".format(self.fps.fps()))
 
         

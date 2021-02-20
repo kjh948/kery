@@ -58,7 +58,7 @@ class ObjectDetectorSSD():
                 #     cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.COLORS[idx], 2)
         self.fps.update()
         self.fps.stop()
-        print("[INFO] elapsed time: {:.2f}".format(self.fps.elapsed()))
+        #print("[INFO] elapsed time: {:.2f}".format(self.fps.elapsed()))
         print("[INFO] approx. FPS: {:.2f}".format(self.fps.fps()))
 
         
