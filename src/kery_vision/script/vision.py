@@ -23,6 +23,8 @@ import cv2
 
 from sensor_msgs.msg import Image, CameraInfo
 from std_msgs.msg import String
+from sensor_msgs.msg import CompressedImage
+
 from kery_msgs.msg import Detection, DetectionArray, Rect
 
 from cv_bridge import CvBridge, CvBridgeError
@@ -38,7 +40,7 @@ from detect_vino import ObjectDetectorSSD as ObjectDetectorSSD_VINO
 FRAMES_TO_SKIP = 0  # use to experiment with CPU load, etc.
 
 class vision():
-    def __init__(self, rgb_topic="/camera/rgb/image_rect_color"):
+    def __init__(self, rgb_topic="/camera/rgb/image_rect_color", is_pub_detect=False):
         self.node_name = "vision"
         
         rospy.init_node(self.node_name)
@@ -47,13 +49,13 @@ class vision():
         rospy.on_shutdown(self.cleanup)
         
         # Create the OpenCV display window for the RGB image
-        self.cv_window_name = self.node_name
-        cv2.namedWindow(self.cv_window_name, cv2.WINDOW_NORMAL)
-        cv2.moveWindow(self.cv_window_name, 25, 75)
+        # self.cv_window_name = self.node_name
+        # cv2.namedWindow(self.cv_window_name, cv2.WINDOW_NORMAL)
+        # cv2.moveWindow(self.cv_window_name, 25, 75)
         
         # And one for the depth image
-        cv2.namedWindow("Depth", cv2.WINDOW_NORMAL)
-        cv2.moveWindow("Depth", 25, 350)
+        # cv2.namedWindow("Depth", cv2.WINDOW_NORMAL)
+        # cv2.moveWindow("Depth", 25, 350)
         
         rospy.loginfo("Init classifier...")
         #self.clf = ObjectDetectorSSD_VINO(model = "../models/pedestrian-detection-adas-0002.xml")
@@ -70,10 +72,15 @@ class vision():
                     [self.sub_rgb, self.sub_depth], 2, 0.9)
         ts.registerCallback(self.rgb_and_depth_callback)
         rospy.loginfo('Subscribing to SYNCHRONIZED RGB: ' + \
-                "/camera/rgb/image_rect_color" + " and Depth: " + "/camera/depth/image_rect")
+                rgb_topic + " and Depth: " + "/camera/depth/image_rect")
 
         self.pt_pub = rospy.Publisher('person_track', DetectionArray, queue_size=1)
-
+        self.is_pub_detect = is_pub_detect
+        if self.is_pub_detect:
+            self.image_pub = rospy.Publisher("/camera/rgb/image_detect",CompressedImage, queue_size=1)
+            self.image_pub_msg = CompressedImage()
+        
+        
         rospy.loginfo("Waiting for image topics...")
 
     def rgb_and_depth_callback(self, rgb_msg, depth_msg):
@@ -167,8 +174,13 @@ class vision():
         self.pt_pub.publish(cob_msg)
         
         # Display the image.
-        cv2.imshow(self.node_name, frame)
-        cv2.imshow("Depth", cv_depth_image)
+        if self.is_pub_detect:
+            self.image_pub_msg.header.stamp = rospy.Time.now()
+            self.image_pub_msg.format = 'jpeg'
+            self.image_pub_msg.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
+            self.image_pub.publish(self.image_pub_msg)
+            #cv2.imshow(self.node_name, frame)
+        #cv2.imshow("Depth", cv_depth_image)
         
         # Process any keyboard commands
         self.keystroke = cv2.waitKey(5)
@@ -205,8 +217,8 @@ class vision():
     
 def main(args):       
     try:
-        vision()
-        #vision(rgb_topic="/usb_cam/image_raw")
+        vision(is_pub_detect=False)
+        #vision(rgb_topic="/usb_cam/image_raw",is_pub_detect=True)
         rospy.spin()
     except KeyboardInterrupt:
         print "Shutting down vision node."
