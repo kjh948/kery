@@ -49,8 +49,8 @@ class cvBridgeDemo():
         cv2.moveWindow("Depth Image", 25, 350)
         
         rospy.loginfo("Init classifier...")
-        #self.clf = ObjectDetectorSSD_VINO(model = "../models/pedestrian-detection-adas-0002.xml")
-        self.clf = ObjectDetectorSSD_CV(model = "../models/MobileNetSSD_deploy.caffemodel", prototxt="../models/MobileNetSSD_deploy.prototxt.txt")
+        self.clf = ObjectDetectorSSD_VINO(model = "../models/pedestrian-detection-adas-0002.xml")
+        #self.clf = ObjectDetectorSSD_CV(model = "../models/MobileNetSSD_deploy.caffemodel", prototxt="../models/MobileNetSSD_deploy.prototxt.txt")
 
         # Create the cv_bridge object
         self.bridge = CvBridge()
