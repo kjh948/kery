@@ -32,9 +32,6 @@ from sensor_msgs.msg import PointCloud2
 from geometry_msgs.msg import Twist
 from math import copysign
 
-from kery_msgs.msg import Detection, DetectionArray, Rect
-from pid import PIDController
-
 class Follower():
     def __init__(self):
         rospy.init_node("follower")
@@ -68,7 +65,7 @@ class Follower():
         self.x_scale = rospy.get_param("~x_scale", 2.5)
         
         # The maximum rotation speed in radians per second
-        self.max_angular_speed = rospy.get_param("~max_angular_speed", 3.0)
+        self.max_angular_speed = rospy.get_param("~max_angular_speed", 2.0)
         
         # The minimum rotation speed in radians per second
         self.min_angular_speed = rospy.get_param("~min_angular_speed", 0.0)
@@ -81,17 +78,6 @@ class Follower():
         
         # Slow down factor when stopping
         self.slow_down_factor = rospy.get_param("~slow_down_factor", 0.8)
-
-        # Target Y value to track
-        self.x_target = rospy.get_param("~x_target", 0.43)
-        self.x_margin = rospy.get_param("~x_margin", 0.05)
-        self.x_scale = rospy.get_param("~x_scale", 1.)
-
-        # Target Y value to track
-        self.z_target = rospy.get_param("~z_target", 0.7)
-        self.z_margin = rospy.get_param("~z_margin", 0.05)
-        self.z_min = rospy.get_param("~z_min", 0.1)
-        self.z_scale = rospy.get_param("~z_scale", 1.)
         
         # Initialize the movement command
         self.move_cmd = Twist()
@@ -100,68 +86,15 @@ class Follower():
         self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=5)
 
         # Subscribe to the point cloud
-        self.pt_sub = rospy.Subscriber('person_track', DetectionArray, self.do_tracking, queue_size=1)
+        self.depth_subscriber = rospy.Subscriber('point_cloud', PointCloud2, self.set_cmd_vel, queue_size=1)
 
-        #PID controllder
-        self.p_val_x = 2.0
-        self.i_val_x = 0.0
-        self.d_val_x = 0.01
-        self.p_val_z = 2.0
-        self.i_val_z = 0.0
-        self.d_val_z = 0.01
-
-        self.cur_angular_vel = 0
-        self.cur_linear_vel = 0
-        
-        self.pid_controller_x = PIDController(self.p_val_x, self.i_val_x, self.d_val_x)
-        self.pid_controller_x.reset()
-
-        self.pid_controller_z = PIDController(self.p_val_z, self.i_val_z, self.d_val_z)
-        self.pid_controller_z.reset()
-
-        rospy.loginfo("Subscribing to person_track...")
+        rospy.loginfo("Subscribing to point cloud...")
         
         # Wait for the pointcloud topic to become available
-        rospy.wait_for_message('person_track', PointCloud2)
+        rospy.wait_for_message('point_cloud', PointCloud2)
 
         rospy.loginfo("Ready to follow!")
-
-    def do_tracking(self, msg):
-        # Track only the first person for this time
-        if len(msg.detections)==0: return
-        track_index = 0
-        detection = msg.detections[track_index]
-        error_x = self.x_target - detection.bounding_box_lwh.x
-        value_x = self.pid_controller_x.update(self.x_scale*error_x, sleep=0)
-
-        if abs(error_x) < self.x_margin:
-            value_x = 0
-            
-        self.cur_angular_vel = copysign(max(self.min_angular_speed, 
-                                        min(self.max_angular_speed, abs(value_x))), value_x)
-        self.move_cmd.angular.z = self.cur_angular_vel
-
-        #make sure it is not NaN
-        if detection.bounding_box_lwh.z == detection.bounding_box_lwh.z:
-            if detection.bounding_box_lwh.z > self.z_min:
-                error_z = - self.z_target + detection.bounding_box_lwh.z
-                value_z = self.pid_controller_z.update(self.z_scale*error_z, sleep=0)
-                if abs(error_z) < self.z_margin:
-                    value_z = 0
-                self.cur_linear_vel = copysign(max(self.min_linear_speed, 
-                                        min(self.max_linear_speed, abs(value_z))), value_z)
-
-        else:
-            self.cur_linear_vel = self.cur_linear_vel * self.slow_down_factor
-            error_z = 0
-
-        self.move_cmd.linear.x = self.cur_linear_vel
         
-        self.cmd_vel_pub.publish(self.move_cmd)
-        #rospy.loginfo("Target X: "+str(self.x_target)+"\tCurrent: "+str(detection.bounding_box_lwh.x)+"\tError: "+str(error_x)+"\tcmd_vel:"+str(self.move_cmd.angular.z))
-        rospy.loginfo("Target Z: "+str(self.z_target)+"\tCurrent: "+str(detection.bounding_box_lwh.z)+"\tError: "+str(error_z)+"\tcmd_vel:"+str(self.move_cmd.linear.x))
-
-
     def set_cmd_vel(self, msg):
         # Initialize the centroid coordinates point count
         x = y = z = n = 0
