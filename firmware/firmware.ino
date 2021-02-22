@@ -76,7 +76,8 @@ void setup()
     //Serial.begin(115200);
     //Serial.print("LINOBASE INIT\n");
 
-    
+    TCCR1B = TCCR1B  & 0b11111000 | 0x01;
+        
     //steering_servo.attach(STEERING_PIN);
     //steering_servo.write(90); 
     nh.initNode();
