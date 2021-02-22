@@ -37,7 +37,7 @@ from mobilenetssd import ObjectDetectorSSD as ObjectDetectorSSD_CV
 from facedetection import ObjectDetectorFace
 from detect_vino import ObjectDetectorSSD as ObjectDetectorSSD_VINO
 
-FRAMES_TO_SKIP = 0  # use to experiment with CPU load, etc.
+FRAMES_TO_SKIP = 5  # use to experiment with CPU load, etc.
 
 class vision():
     def __init__(self, rgb_topic="/camera/rgb/image_rect_color", is_pub_detect=False):
@@ -155,8 +155,8 @@ class vision():
                 cv2.rectangle(cv_depth_image, (dbox_left, dbox_top), (dbox_right, dbox_bottom), (255, 128, 0), 1)
 
                 depth_mean = np.nanmedian(cv_depth_bounding_box[np.nonzero(cv_depth_bounding_box)])
-                body_position_radians_x = (((box_left+box_right)/2. / float(source_image_width)) - 0.5) * 70.#R200
-                body_position_radians_y = (((box_top+box_bottom)/2. / float(source_image_height)) - 0.5) * 43.#R200
+                body_position_radians_x = (((box_left+box_right)/2. / float(source_image_width)))
+                body_position_radians_y = (((box_top+box_bottom)/2. / float(source_image_height)))
                 rospy.loginfo("DBG RAW Xrad =  " + str(body_position_radians_x)+"DBG RAW Yrad =  " + str(body_position_radians_y)+"DBG RAW Depth =  " + str(depth_mean))
                 
                 detection = Detection()
@@ -169,6 +169,10 @@ class vision():
                 detection.mask.roi.y = box_top
                 detection.mask.roi.width = -box_left+box_right
                 detection.mask.roi.height = -box_top+box_bottom
+                detection.bounding_box_lwh.x = body_position_radians_x
+                detection.bounding_box_lwh.y = body_position_radians_y
+                detection.bounding_box_lwh.z = depth_mean
+
                 cob_msg.detections.append(detection)
         
         self.pt_pub.publish(cob_msg)
@@ -217,7 +221,7 @@ class vision():
     
 def main(args):       
     try:
-        vision(is_pub_detect=False)
+        vision(is_pub_detect=True)
         #vision(rgb_topic="/usb_cam/image_raw",is_pub_detect=True)
         rospy.spin()
     except KeyboardInterrupt:
