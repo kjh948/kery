@@ -1,23 +1,11 @@
 <launch>
-  <node pkg="kery_app" name="follower" type="kery_app_follower.py" output="screen">
-    <remap from="point_cloud" to="/camera/depth/points" />
-    
-    <rosparam>
-       min_x: -0.3
-       max_x: 0.3
-       min_y: -0.05
-       max_y: 0.5
-       max_z: 1.25
-       goal_z: 1.0
-       z_threshold: 0.05
-       x_threshold: 0.1
-       z_scale: 2.0
-       x_scale: 7.0
-       max_angular_speed: 3.0
-       min_angular_speed: 0.5
-       max_linear_speed: 0.3
-       min_linear_speed: 0.2
-    </rosparam>
-       
-  </node>
+  <node name="kery_vision" pkg="kery_vision" type="vision.py" output="screen"></node>
+  <node pkg="kery_app" name="follower" type="kery_app_follower.py" output="screen"></node>
+  
+  <!-- Minimal launch for robot base -->
+  <include file="$(find linorobot)/launch/minimal.launch" />
+  <!-- R200 -->
+  <include file="$(find realsense_camera)/launch/r200_nodelet_rgbd.launch" />
+
 </launch>
+

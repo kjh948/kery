@@ -33,6 +33,8 @@ from geometry_msgs.msg import Twist
 from math import copysign
 
 from kery_msgs.msg import Detection, DetectionArray, Rect
+from std_msgs.msg import String
+
 from pid import PIDController
 
 class Follower():
@@ -88,8 +90,8 @@ class Follower():
         self.x_scale = rospy.get_param("~x_scale", 1.)
 
         # Target Y value to track
-        self.z_target = rospy.get_param("~z_target", 0.7)
-        self.z_margin = rospy.get_param("~z_margin", 0.05)
+        self.z_target = rospy.get_param("~z_target", 1.0)
+        self.z_margin = rospy.get_param("~z_margin", 0.001)
         self.z_min = rospy.get_param("~z_min", 0.1)
         self.z_scale = rospy.get_param("~z_scale", 1.)
         
@@ -112,12 +114,22 @@ class Follower():
 
         self.cur_angular_vel = 0
         self.cur_linear_vel = 0
+        self.prev_angular_vel = 0
+        self.prev_linear_vel = 0
         
         self.pid_controller_x = PIDController(self.p_val_x, self.i_val_x, self.d_val_x)
         self.pid_controller_x.reset()
 
         self.pid_controller_z = PIDController(self.p_val_z, self.i_val_z, self.d_val_z)
         self.pid_controller_z.reset()
+
+        self.state_list = ['none','detected','lost']#_in_left','lost_in_right','lost_near','lost_far']
+        self.prev_state = 'none'
+        self.prev_state_count = 0
+        self.prev_detection = Detection()
+
+        self.sound_pub = rospy.Publisher('sound_cmd', String, queue_size=1)
+        self.face_pub = rospy.Publisher('face_cmd', String, queue_size=1)
 
         rospy.loginfo("Subscribing to person_track...")
         
@@ -126,10 +138,37 @@ class Follower():
 
         rospy.loginfo("Ready to follow!")
 
+        self.sound_pub.publish("Question")
+        self.face_pub.publish("2")
+
     def do_tracking(self, msg):
+        
         # Track only the first person for this time
-        if len(msg.detections)==0: return
-        track_index = 0
+        num_person = len(msg.detections)
+        if num_person==0:
+            self.cur_angular_vel = self.cur_angular_vel * self.slow_down_factor
+            self.move_cmd.angular.z = self.cur_angular_vel
+            self.cur_linear_vel = self.cur_linear_vel * self.slow_down_factor
+            self.move_cmd.linear.x = self.cur_linear_vel 
+            self.cmd_vel_pub.publish(self.move_cmd)
+
+            if(self.cur_linear_vel<0.05): 
+                # self.sound_pub.publish("Annoyed")
+                self.cur_linear_vel = 0
+                self.cur_angular_vel = 0
+
+            rospy.loginfo("Lost Target\t Angular velocity is:\t"+str(self.move_cmd.angular.z))
+
+            return
+
+        track_index = -1
+        min_dist = 10000
+        for ii in range(num_person):
+            if min_dist < msg.detections[ii].bounding_box_lwh.z:
+                min_dist = msg.detections[ii].bounding_box_lwh.z
+                track_index = ii
+
+        
         detection = msg.detections[track_index]
         error_x = self.x_target - detection.bounding_box_lwh.x
         value_x = self.pid_controller_x.update(self.x_scale*error_x, sleep=0)
@@ -140,7 +179,7 @@ class Follower():
         self.cur_angular_vel = copysign(max(self.min_angular_speed, 
                                         min(self.max_angular_speed, abs(value_x))), value_x)
         self.move_cmd.angular.z = self.cur_angular_vel
-
+        
         #make sure it is not NaN
         if detection.bounding_box_lwh.z == detection.bounding_box_lwh.z:
             if detection.bounding_box_lwh.z > self.z_min:
@@ -155,8 +194,15 @@ class Follower():
             self.cur_linear_vel = self.cur_linear_vel * self.slow_down_factor
             error_z = 0
 
+        if self.prev_linear_vel==0 and self.cur_linear_vel !=0:
+            self.sound_pub.publish("Happy")
+            self.face_pub.publish("3")
+
         self.move_cmd.linear.x = self.cur_linear_vel
         
+        self.prev_linear_vel = self.cur_linear_vel
+        self.prev_angular_vel = self.cur_angular_vel
+
         self.cmd_vel_pub.publish(self.move_cmd)
         #rospy.loginfo("Target X: "+str(self.x_target)+"\tCurrent: "+str(detection.bounding_box_lwh.x)+"\tError: "+str(error_x)+"\tcmd_vel:"+str(self.move_cmd.angular.z))
         rospy.loginfo("Target Z: "+str(self.z_target)+"\tCurrent: "+str(detection.bounding_box_lwh.z)+"\tError: "+str(error_z)+"\tcmd_vel:"+str(self.move_cmd.linear.x))

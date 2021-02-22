@@ -28,8 +28,10 @@ from sensor_msgs.msg import CompressedImage
 from kery_msgs.msg import Detection, DetectionArray, Rect
 
 from cv_bridge import CvBridge, CvBridgeError
-import numpy as np
 import message_filters
+import rospkg
+
+import numpy as np
 
 #from mobilenetssd import ObjectDetectorSSD 
 #from detect_vino import ObjectDetectorSSD 
@@ -38,6 +40,10 @@ from facedetection import ObjectDetectorFace
 from detect_vino import ObjectDetectorSSD as ObjectDetectorSSD_VINO
 
 FRAMES_TO_SKIP = 5  # use to experiment with CPU load, etc.
+
+rospack = rospkg.RosPack()
+pkg_path = rospack.get_path('kery_vision')
+
 
 class vision():
     def __init__(self, rgb_topic="/camera/rgb/image_rect_color", is_pub_detect=False):
@@ -59,7 +65,7 @@ class vision():
         
         rospy.loginfo("Init classifier...")
         #self.clf = ObjectDetectorSSD_VINO(model = "../models/pedestrian-detection-adas-0002.xml")
-        self.clf = ObjectDetectorSSD_CV(model = "../models/MobileNetSSD_deploy.caffemodel", prototxt="../models/MobileNetSSD_deploy.prototxt.txt")
+        self.clf = ObjectDetectorSSD_CV(model = pkg_path+"/models/MobileNetSSD_deploy.caffemodel", prototxt=pkg_path+"/models/MobileNetSSD_deploy.prototxt.txt")
 
         # Create the cv_bridge object
         self.bridge = CvBridge()
@@ -92,7 +98,7 @@ class vision():
 
         if self.skip_frame_count < FRAMES_TO_SKIP:
             self.skip_frame_count += 1
-            rospy.loginfo("DBG skipping frame ")
+            #rospy.loginfo("DBG skipping frame ")
             return
         self.skip_frame_count = 0 
 
