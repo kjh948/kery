@@ -90,9 +90,8 @@ class HotwordDetector(object):
             self.detector.NumChannels() * self.detector.SampleRate() * 5)
 
     def record_proc(self):
-        logger.info("recording started")
-        print("recording started")
-
+        logger.debug("recording started")
+        
         CHUNK = 2048
         RECORD_RATE = 16000
         cmd = 'arecord -q -r %d -f S16_LE -D plughw:1,0' % RECORD_RATE

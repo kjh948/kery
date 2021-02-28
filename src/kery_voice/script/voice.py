@@ -25,15 +25,15 @@ from chatbot import r2d2Bot
 
 rospack = rospkg.RosPack()
 data_path = rospack.get_path('kery_voice')
-print("Loading r from %s", data_path)
+rospy.loginfo("Loading r from %s", data_path)
 
 SCORE_THRE = 0.6
 
 asr = r2d2Asr(ambient=False)
 tts = r2d2Tts()
 nlu = r2d2Bot(corpus=data_path + '/script/resources', read_only=False)
-print("NLU: loading the corpus from "+data_path + '/script/resources')
-gOnWakeup = False
+rospy.loginfo("NLU: loading the corpus from "+data_path + '/script/resources')
+gOnWakeup = True
 gOnAsr = False
 
 interrupted = False
@@ -71,9 +71,7 @@ def callback_start_asr(data):
 
 def voice_loop():
     utt = asr.get_asr()
-    print('asr results: ' + utt)
-
-    #if utt: tts.speak(utt)
+    rospy.loginfo("Get ASR results: " + utt)
 
     response = nlu.get_response(utt)
     if response: tts.speak(response.text)
@@ -93,6 +91,9 @@ if __name__=='__main__':
 
     detector = snowboydecoder.HotwordDetector(wakeup_model, sensitivity=0.6)
     while True:
+        if gOnWakeup is False:
+            time.sleep(3)
+            continue 
         detector.start(interrupt_check=interrupt_callback,sleep_time=0.08)
         voice_loop()
         

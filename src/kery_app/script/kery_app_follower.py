@@ -82,7 +82,7 @@ class Follower():
         self.min_linear_speed = rospy.get_param("~min_linear_speed", 0.1)
         
         # Slow down factor when stopping
-        self.slow_down_factor = rospy.get_param("~slow_down_factor", 0.8)
+        self.slow_down_factor = rospy.get_param("~slow_down_factor", 0.9)
 
         # Target Y value to track
         self.x_target = rospy.get_param("~x_target", 0.43)
@@ -105,12 +105,12 @@ class Follower():
         self.pt_sub = rospy.Subscriber('person_track', DetectionArray, self.do_tracking, queue_size=1)
 
         #PID controllder
-        self.p_val_x = 2.0
+        self.p_val_x = 1.5
         self.i_val_x = 0.0
         self.d_val_x = 0.01
-        self.p_val_z = 2.0
+        self.p_val_z = 3.0
         self.i_val_z = 0.0
-        self.d_val_z = 0.01
+        self.d_val_z = 1.0
 
         self.cur_angular_vel = 0
         self.cur_linear_vel = 0
@@ -132,7 +132,10 @@ class Follower():
         self.face_pub = rospy.Publisher('face_cmd', String, queue_size=1)
 
         rospy.loginfo("Subscribing to person_track...")
-        
+
+        self.is_running = 1
+        rospy.Subscriber("follower_enable", String, self.follower_enable)
+
         # Wait for the pointcloud topic to become available
         rospy.wait_for_message('person_track', PointCloud2)
 
@@ -141,23 +144,33 @@ class Follower():
         self.sound_pub.publish("Question")
         self.face_pub.publish("2")
 
+    def follower_enable(self, msg):
+        if msg.data=='on': self.is_running = 1
+        else: self.is_running = 0
+
     def do_tracking(self, msg):
+
+        if self.is_running == 0: return
         
         # Track only the first person for this time
         num_person = len(msg.detections)
         if num_person==0:
-            self.cur_angular_vel = self.cur_angular_vel * self.slow_down_factor
-            self.move_cmd.angular.z = self.cur_angular_vel
-            self.cur_linear_vel = self.cur_linear_vel * self.slow_down_factor
-            self.move_cmd.linear.x = self.cur_linear_vel 
-            self.cmd_vel_pub.publish(self.move_cmd)
-
             if(self.cur_linear_vel<0.05): 
-                # self.sound_pub.publish("Annoyed")
                 self.cur_linear_vel = 0
                 self.cur_angular_vel = 0
 
-            rospy.loginfo("Lost Target\t Angular velocity is:\t"+str(self.move_cmd.angular.z))
+                if self.prev_state is not 'none':
+                    self.sound_pub.publish("Annoyed")
+
+                self.prev_state = 'none'
+            else:
+                self.cur_angular_vel = self.cur_angular_vel * self.slow_down_factor
+                self.cur_linear_vel = self.cur_linear_vel * self.slow_down_factor
+                rospy.loginfo("Lost Target\t Angular velocity is:\t"+str(self.move_cmd.angular.z))
+                
+            self.move_cmd.angular.z = self.cur_angular_vel
+            self.move_cmd.linear.x = self.cur_linear_vel 
+            self.cmd_vel_pub.publish(self.move_cmd)
 
             return
 
@@ -194,7 +207,9 @@ class Follower():
             self.cur_linear_vel = self.cur_linear_vel * self.slow_down_factor
             error_z = 0
 
-        if self.prev_linear_vel==0 and self.cur_linear_vel !=0:
+        #Transition from none to detect
+        if self.prev_state=='none' and self.cur_linear_vel !=0:
+            self.prev_state = 'detected'
             self.sound_pub.publish("Happy")
             self.face_pub.publish("3")
 

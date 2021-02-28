@@ -17,7 +17,7 @@ from std_msgs.msg import Int8
 import rospkg
 
 detector = dict()
-detector['coco'] = ObjectDetectorSSD_VINO
+detector['coco'] = ObjectDetectorSSD_CV
 detector['face'] = ObjectDetectorFace
 detector_type = 'coco'
 #detector_type = 'face'
@@ -163,10 +163,10 @@ def overlay_on_image(frames, object_infos, camera_width, camera_height):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    # parser.add_argument("--model", default="../models/MobileNetSSD_deploy.caffemodel", help="Path of the detection model.")
+    parser.add_argument("--model", default="../models/MobileNetSSD_deploy.caffemodel", help="Path of the detection model.")
     parser.add_argument("--prototxt", default="../models/MobileNetSSD_deploy.prototxt.txt", help="Path of the prototxt.")
     #parser.add_argument("--model", default="../models/haarcascade_frontalface_default.xml", help="Path of the detection model.")
-    parser.add_argument("--model", default="../models/pedestrian-detection-adas-0002.xml", help="Path of the detection model.")
+    #parser.add_argument("--model", default="../models/pedestrian-detection-adas-0002.xml", help="Path of the detection model.")
    
     
     parser.add_argument("--usbcamno", type=int, default=2, help="USB Camera number.")

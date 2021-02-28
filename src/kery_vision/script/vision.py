@@ -86,11 +86,18 @@ class vision():
             self.image_pub = rospy.Publisher("/camera/rgb/image_detect",CompressedImage, queue_size=1)
             self.image_pub_msg = CompressedImage()
         
+        self.is_running = 1
+        rospy.Subscriber("vision_enable", String, self.vision_enable)
         
         rospy.loginfo("Waiting for image topics...")
+    
+    def vision_enable(self, msg):
+        if msg.data=='on': self.is_running = 1
+        else: self.is_running = 0
 
     def rgb_and_depth_callback(self, rgb_msg, depth_msg):
         # Use cv_bridge() to convert the ROS image to OpenCV format
+        if self.is_running==0: return
         self.incoming_depth_msg = depth_msg
         self.rgb_callback(rgb_msg)
 
@@ -98,7 +105,6 @@ class vision():
 
         if self.skip_frame_count < FRAMES_TO_SKIP:
             self.skip_frame_count += 1
-            #rospy.loginfo("DBG skipping frame ")
             return
         self.skip_frame_count = 0 
 
@@ -189,7 +195,7 @@ class vision():
             self.image_pub_msg.format = 'jpeg'
             self.image_pub_msg.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
             self.image_pub.publish(self.image_pub_msg)
-            #cv2.imshow(self.node_name, frame)
+            cv2.imshow(self.node_name, frame)
         #cv2.imshow("Depth", cv_depth_image)
         
         # Process any keyboard commands
@@ -199,27 +205,6 @@ class vision():
             if cc == 'q':
                 # The user has press the q key, so exit
                 rospy.signal_shutdown("User hit q key to quit.")
-                
-    def depth_callback(self, ros_image):
-        # Use cv_bridge() to convert the ROS image to OpenCV format
-        try:
-            # The depth image is a single-channel float32 image
-            depth_image = self.bridge.imgmsg_to_cv2(ros_image, "32FC1")
-        except CvBridgeError, e:
-            print e
-
-        # Convert the depth image to a Numpy array since most cv2 functions
-        # require Numpy arrays.
-        depth_array = np.array(depth_image, dtype=np.float32)
-                
-        # Normalize the depth image to fall between 0 (black) and 1 (white)
-        cv2.normalize(depth_array, depth_array, 0, 1, cv2.NORM_MINMAX)
-        
-        # Process the depth image
-        depth_display_image = self.process_depth_image(depth_array)
-    
-        # Display the result
-        cv2.imshow("Depth Image", depth_display_image)
 
     def cleanup(self):
         print "Shutting down vision node."
