@@ -1,7 +1,6 @@
 <launch>
   <node name="kery_vision" pkg="kery_vision" type="vision.py" output="screen"></node>
   <node pkg="kery_app" name="follower" type="kery_app_follower.py" output="screen"></node>
-  <node pkg="kery_sound" name="sound" type="sound.py" output="screen"></node>
   
   <!-- Minimal launch for robot base -->
   <include file="$(find linorobot)/launch/minimal.launch" />

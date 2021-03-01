@@ -1,0 +1,5 @@
+int16 relative_angle
+int16 absolute_angle
+int16 distance
+---
+int8 status
