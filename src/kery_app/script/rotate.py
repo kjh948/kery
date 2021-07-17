@@ -31,8 +31,8 @@ while not rospy.is_shutdown():
 
     command.linear.x = 0
 
-    # if(target-yaw/((math.pi/180))<3.0):
-    #     command.angular.z = 0
+    if(target-yaw/((math.pi/180))<3.0):
+         target = target-10#command.angular.z = 0
 
     pub.publish(command)
     print("taeget={} current:{}", target,yaw/(math.pi/180))

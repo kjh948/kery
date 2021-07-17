@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# test script
+# rostopic pub /face_cmd std_msgs/String "data: '4'"
 import rospy
 from std_msgs.msg import String
 import rospkg
