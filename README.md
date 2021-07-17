@@ -1,4 +1,5 @@
 Kery
+
 Alternative variations inspired by kuri robot.
 Special thanks to linorobot project members.
 
@@ -6,7 +7,7 @@ Here are short tips of kery operation.
 
 1. audio
 
-sudo vi /etc/asound.conf 
+sudo vi /etc/asound.conf
 cat /proc/asound/cards
 
 2. linorobot related script
@@ -35,6 +36,7 @@ For lidar checking,
   
 3. audio device id keeps chaging
 https://askubuntu.com/questions/991484/how-to-prevent-automatic-change-of-the-audio-device
+
 4. pip tips
 TMPDIR=~/workspace/tmp/ pip install --cache-dir=~/workspace/tmp/ opencv-contrib-python==4.2.0.32
 
