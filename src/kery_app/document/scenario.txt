@@ -1,0 +1,5 @@
+1. Patrol, follow the user, and chitchat
+ 1.1 patrol between two way points
+ 1.2 when wakeup voice detected, stop and listen to the command
+ 1.3 if the command is "follow me", robot will follow the detected user
+   1.3.1 if no person detected, 
