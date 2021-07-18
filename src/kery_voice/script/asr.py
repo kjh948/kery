@@ -30,11 +30,12 @@ class r2d2Asr(object):
 
     def get_asr(self):
         if not self.ambient:
+            print("Start ASR")
             #VAD using adinrec
             #note: threshold for adinrec needs to be readjusted for a new HW setting
             try:
                 #subprocess.check_call(['ALSADEV=plughw:1,0 adinrec -lv 1000 -zc 200 out.wav'], shell=True,stderr=subprocess.STDOUT)
-                subprocess.check_call(['adinrec -lv 1000 -zc 200 out.wav'], shell=True,stderr=subprocess.STDOUT)
+                subprocess.check_call(['adinrec -lv 1000 -zc 200 '+self.WAV_FILE], shell=True,stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError, e:
                 print "Ping stdout output:\n", e.output
                 return 'ERROR'
@@ -46,7 +47,7 @@ class r2d2Asr(object):
             except:
                 str = 'ERROR'
                 print "can't understand"
-            os.remove('out.wav')
+            os.remove(self.WAV_FILE)
         else:
             try:
                 with self.source as source:

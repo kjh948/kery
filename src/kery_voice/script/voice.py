@@ -18,23 +18,25 @@ import sys
 import signal
 import collections
 import time
+import threading
 
 from asr import r2d2Asr
-from tts import r2d2Tts
 from chatbot import r2d2Bot
+
 
 rospack = rospkg.RosPack()
 data_path = rospack.get_path('kery_voice')
-rospy.loginfo("Loading r from %s", data_path)
+rospy.loginfo("Loading resouces from %s", data_path)
 
 SCORE_THRE = 0.6
 
 asr = r2d2Asr(ambient=False)
-tts = r2d2Tts()
 nlu = r2d2Bot(corpus=data_path + '/script/resources', read_only=False)
 rospy.loginfo("NLU: loading the corpus from "+data_path + '/script/resources')
 gOnWakeup = True
 gOnAsr = False
+
+tts_pub = rospy.Publisher('tts_cmd', String, queue_size=5)
 
 interrupted = False
 
@@ -74,7 +76,10 @@ def voice_loop():
     rospy.loginfo("Get ASR results: " + utt)
 
     response = nlu.get_response(utt)
-    if response: tts.speak(response.text)
+    rospy.loginfo("Get NLU results: " + response.text)
+    if response: 
+        #tts.speak(response.text)
+        tts_pub.publish(response.text)
     
 if __name__=='__main__':
     rospy.init_node('kery_voice',anonymous=True)
@@ -88,14 +93,16 @@ if __name__=='__main__':
 
     wakeup_model = data_path + '/script/resources/thomas.pmdl'
     rospy.loginfo("Loading wakeup model from %s", wakeup_model)
-
-    detector = snowboydecoder.HotwordDetector(wakeup_model, sensitivity=0.6)
+    
     while True:
         if gOnWakeup is False:
             time.sleep(3)
             continue 
-        detector.start(interrupt_check=interrupt_callback,sleep_time=0.08)
+        detector = snowboydecoder.HotwordDetector(wakeup_model, sensitivity=SCORE_THRE)
+        rospy.loginfo("Wakeup word listening")
+        detector.start(interrupt_check=interrupt_callback,sleep_time=0.03)
+        detector.terminate()
+        time.sleep(0.05)
         voice_loop()
-        
 
     detector.terminate()

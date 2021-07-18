@@ -59,3 +59,10 @@ xdotool mousemove 10 10
 rosrun usb_cam usb_cam_node _video_device:=/dev/video1 _framerate:=10  _pixel_format:=yuyv _image_width:=640 _image_height:=480
 roslaunch astra_launch astrapro.launch
 
+10. smach install
+sudo apt-get install ros-kinetic-smach ros-kinetic-smach-ros ros-kinetic-executive-smach ros-kinetic-smach-viewer
+
+11. ros repo key update
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+
+12. 

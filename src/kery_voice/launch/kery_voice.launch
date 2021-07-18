@@ -1,0 +1,7 @@
+<launch>
+  <node name="kery_voice" pkg="kery_voice" type="voice.py" output="screen"></node>
+  <node pkg="kery_sound" name="kery_sound" type="sound.py" output="screen"></node>
+  
+</launch>
+
+
